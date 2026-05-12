@@ -154,6 +154,90 @@ El sistema utiliza una base de datos NoSQL (Firestore) organizada de forma relac
 * **Compatibilidad de Hardware:** Soporte para periféricos USB (Windows) y Bluetooth (Android/iOS) para impresión de tickets.
 
 ---
+Tienes toda la razón. Un **Manual Maestro de Ingeniería** sin su archivo de configuración de dependencias es como una receta de café sin granos. Para que el equipo de **Antigravity** pueda compilar este proyecto en Android, iOS, Windows y Web con todas las funciones mencionadas (Firebase, Provider, Impresión, Offline), este es el bloque técnico que faltaba.
+
+Aquí tienes el `pubspec.yaml` optimizado y categorizado:
+
+---
+
+## 🛠️ 6. DEPENDENCIAS Y STACK TECNOLÓGICO (`pubspec.yaml`)
+
+Para asegurar la resiliencia y el rendimiento de **CoffeeManage Pro**, utilizaremos las versiones más estables y compatibles con Flutter 3.x.
+
+### 📦 Gestión de Estado y Arquitectura
+
+* **`provider`**: El estándar del proyecto para la gestión de estado reactivo.
+* **`get_it`**: Localizador de servicios para implementar la Inyección de Dependencias de Clean Architecture.
+* **`equatable`**: Para simplificar la comparación de objetos en las `Entities` del dominio.
+
+### 🔥 Backend y Persistencia (Firebase)
+
+* **`firebase_core`**: Núcleo de conexión.
+* **`firebase_auth`**: Manejo de sesiones de empleados.
+* **`cloud_firestore`**: Base de datos NoSQL con soporte nativo para persistencia offline y streams.
+* **`connectivity_plus`**: Para detectar el estado de la red y gestionar el feedback visual de "Modo Offline".
+
+### 🖥️ Soporte Multiplataforma y Hardware (Windows/iOS/Android)
+
+* **`blue_thermal_printer`**: Para la conexión con impresoras térmicas vía Bluetooth (especialmente útil en tablets y móviles).
+* **`esc_pos_utils`**: Generación de comandos de impresión estándar para tickets de café.
+* **`win32`**: (Opcional/Específico) Para integraciones profundas con el sistema de archivos o periféricos en Windows.
+* **`printing`**: Manejo de generación de PDFs (Facturación) y diálogo de impresión nativo.
+
+### 🎨 UI y Visuales (Antigravity Design)
+
+* **`google_fonts`**: Para implementar la tipografía premium (Ej: *Montserrat* o *Poppins*) que contraste con el fondo Onyx.
+* **`flutter_spinkit`**: Animaciones de carga elegantes en color Cinnamon Accent.
+* **`font_awesome_flutter`**: Iconografía detallada para insumos y tipos de café.
+
+---
+
+## 📋 Configuración del Archivo `pubspec.yaml`
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # --- GESTIÓN DE ESTADO & ARQUITECTURA ---
+  provider: ^6.1.1
+  get_it: ^7.7.0
+  equatable: ^2.0.5
+
+  # --- BACKEND (FIREBASE) ---
+  firebase_core: ^3.0.0
+  firebase_auth: ^5.0.0
+  cloud_firestore: ^5.0.0
+
+  # --- HARDWARE & IMPRESIÓN ---
+  # Ideal para Windows y Mobile
+  printing: ^5.12.0
+  pdf: ^3.10.7
+  blue_thermal_printer: ^0.1.2  # Android/iOS
+  flutter_pos_printer_platform: ^1.1.2 # Soporte USB para Windows
+
+  # --- UI & UX (ANTIGRAVITY STYLE) ---
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10
+  font_awesome_flutter: ^10.7.0
+  intl: ^0.19.0 # Manejo de fechas y moneda local
+
+  # --- UTILIDADES ---
+  connectivity_plus: ^6.0.3
+  logger: ^2.3.0
+
+```
+
+---
+
+## ⚠️ Notas de Implementación para el Equipo
+
+1. **Compatibilidad Windows**: Al ejecutar en Windows, asegúrate de habilitar las capacidades de red y comunicación serial en el manifiesto de la aplicación.
+2. **Permisos iOS**: Es obligatorio añadir los permisos de Bluetooth en el `Info.plist` para que la App pueda buscar impresoras térmicas en la barra de café.
+3. **Manejo de Versiones**: Se recomienda usar `^` para recibir actualizaciones de parches, pero siempre fijar versiones mayores para evitar "breaking changes" en el algoritmo de inventario.
+
+¿Necesitas que profundice en la configuración específica del **Info.plist** para iOS o los **Proyectos de Windows**?
 
 ## ✅ CRITERIOS DE ÉXITO (DEFINITION OF DONE)
 
@@ -164,61 +248,66 @@ El sistema utiliza una base de datos NoSQL (Firestore) organizada de forma relac
 
 
 ## PROMPT 
----
-
-Aquí tienes el **Prompt Final de Implementación**:
 
 ---
 
-# ☕ Prompt de Ingeniería: CoffeeManage Pro (Clean Architecture + Provider + Firebase)
+# ☕ Prompt de Ingeniería: CoffeeManage Pro (The Antigravity Ultimate Order)
 
-**Rol:** Actúa como Arquitecto de Software Senior y Lead Developer de **Antigravity**. Tu misión es codificar el núcleo de **CoffeeManage Pro**, un sistema multiplataforma (Android, iOS, Web, Windows) de alto rendimiento para gestión de café de especialidad.
+**Rol:** Actúa como Arquitecto de Software Senior y Lead Developer de **Antigravity**. Tu misión es codificar el núcleo de **CoffeeManage Pro**, un sistema multiplataforma de alto rendimiento para gestión de café de especialidad.
 
-### 1. Gestión de Estado (Provider Pattern)
+### 1. Stack Tecnológico y Dependencias (`pubspec.yaml`)
 
-Implementa la capa de presentación utilizando **Provider** para la gestión de estado reactivo:
+El proyecto debe utilizar obligatoriamente las siguientes librerías para garantizar la estabilidad en Android, iOS, Web y Windows:
 
-* **InventoryProvider:** Debe manejar el estado de la colección `ingredientes`, permitiendo actualizaciones en tiempo real y disparando alertas cuando un insumo llegue a su `alerta_minima`.
-* **OrderProvider:** Debe gestionar el carrito de compras actual, el cálculo de impuestos/totales y el proceso de envío a Firebase.
-* **TableProvider:** Un `StreamProvider` que escuche los cambios en el mapa de mesas para actualizar la UI instantáneamente en todos los dispositivos.
+* **Estado:** `provider`, `get_it`, `equatable`.
+* **Backend:** `firebase_core`, `cloud_firestore`, `firebase_auth`.
+* **Hardware/Desktop:** `flutter_pos_printer_platform` (USB/Windows), `blue_thermal_printer` (Bluetooth/Mobile), `printing` & `pdf` (Facturación).
+* **UI/UX:** `google_fonts`, `font_awesome_flutter`, `connectivity_plus`.
 
-### 2. Estructura de Datos (Firestore NoSQL)
+### 2. Gestión de Estado (Provider Pattern)
 
-Genera modelos en Dart con `fromFirestore` y `toJson` para las siguientes colecciones:
+Implementa la capa de presentación utilizando **Provider**:
 
-* **`usuarios`:** `{ uid: String, nombre: String, rol: admin|mesero|cocina, status: Bool }`
-* **`ingredientes`:** `{ id: String, nombre: String, stock_actual: Double, alerta_minima: Double }`
-* **`productos`:** `{ id: String, nombre: String, precio: Double, receta: Map<id_ingrediente, cantidad> }`
-* **`pedidos`:** `{ id: String, items: List, estado: pendiente|preparando|listo|pagado, total: Double, timestamp: Timestamp }`
+* **InventoryProvider:** Manejo de `ingredientes` con actualizaciones en tiempo real y disparadores para `alerta_minima`.
+* **OrderProvider:** Gestión de carrito, cálculos financieros y lógica de envío.
+* **TableProvider:** `StreamProvider` para el mapeo de mesas sincrónico.
 
-### 3. Especificaciones Windows & iOS
+### 3. Estructura de Datos (Firestore NoSQL)
 
-El código debe estar preparado para el despliegue nativo:
+Genera modelos en Dart (`fromFirestore`/`toJson`) para:
 
-* **Windows (Desktop):** Optimiza la UI para pantallas grandes usando un `NavigationRail` lateral. Incluye soporte para impresión de tickets térmicos mediante protocolos de comunicación serial/USB.
-* **iOS (Mobile):** Implementa el sistema de diseño Dark Coffee respetando el `SafeArea`, gestos táctiles fluidos y soporte para notificaciones Push cuando un pedido cambie a estado "listo".
+* **`usuarios`:** `{ uid, nombre, rol: admin|mesero|cocina, status: Bool }`
+* **`ingredientes`:** `{ id, nombre, stock_actual: Double, alerta_minima: Double }`
+* **`productos`:** `{ id, nombre, precio: Double, receta: Map<id_ingrediente, cantidad> }`
+* **`pedidos`:** `{ id, items: List, estado: pendiente|preparando|listo|pagado, total: Double, timestamp: Timestamp }`
 
-### 4. Lógica de Negocio: Algoritmo de Descuento Atómico
+### 4. Adaptabilidad Windows & iOS
 
-Desarrolla un `Service` que utilice **Firebase Transactions**:
+* **Windows:** Interfaz optimizada con `NavigationRail` lateral y lógica de impresión térmica vía USB/Serial.
+* **iOS:** Uso de `SafeArea`, gestos táctiles de alta respuesta y notificaciones locales para cambios de estado de pedidos.
 
-* Al procesar un pedido, debe leer la receta de cada producto y restar las cantidades exactas de la colección `ingredientes`.
-* **Validación Crítica:** Si el `stock_actual` es insuficiente para completar la receta, la transacción debe fallar automáticamente, notificando al usuario mediante el `OrderProvider`.
+### 5. Lógica de Negocio: Descuento Atómico
 
-### 5. Identidad Visual (Antigravity Style)
+Desarrolla un `Service` con **Firebase Transactions** que:
 
-Configura el `ThemeData` global:
+1. Valide la existencia de stock para cada ingrediente de la receta antes de confirmar.
+2. Ejecute el descuento de forma atómica.
+3. Lance una excepción controlada si el stock es insuficiente, la cual debe ser capturada por el `OrderProvider` para mostrar un error en la UI.
 
-* **Fondo:** Onyx Base (#121212) | **Tarjetas:** Coffee Elevation (#1E1E1E).
-* **CTAs:** Espresso Primary (#3E2723) | **Acentos:** Cinnamon (#795548).
-* **Texto:** Latte Cream (#D7CCC8).
+### 6. Identidad Visual (Antigravity Dark Mode)
 
-**Entregable esperado:** Estructura de carpetas (`core`, `domain`, `data`, `presentation`), implementación de los `ChangeNotifier` de Provider, modelos de datos y la configuración del tema visual.
+Configura el `ThemeData` con Material 3:
+
+* **Onyx Base:** #121212 | **Coffee Elevation:** #1E1E1E.
+* **Espresso Primary:** #3E2723 | **Cinnamon Accent:** #795548.
+* **Latte Cream (Texto):** #D7CCC8.
+
+**Entregable:** Genera la estructura de carpetas (Clean Architecture), el archivo `pubspec.yaml` completo, los modelos de datos y la implementación del `InventoryProvider`.
 
 ---
 
-### ¿Por qué este prompt es definitivo?
+### 💡 Nota para Antigravity:
 
-1. **Reactividad:** Al incluir **Provider**, la IA estructurará la app para que la cocina vea los pedidos sin necesidad de refrescar la pantalla.
-2. **Robustez:** El uso de **Transactions** evita que el inventario se desfase si hay múltiples ventas simultáneas.
-3. **Versatilidad:** Define comportamientos específicos para el entorno de escritorio (**Windows**) y el ecosistema **iOS**.
+Con este prompt, la IA te entregará un código listo para ser organizado en carpetas. Es la base técnica más sólida posible para asegurar que el inventario nunca falle y la estética se mantenga "Premium".
+
+¿Deseas que ejecute este prompt ahora mismo para generarte el código base o prefieres ajustar alguna dependencia más?
