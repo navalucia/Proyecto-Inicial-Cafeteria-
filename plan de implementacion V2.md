@@ -164,62 +164,61 @@ El sistema utiliza una base de datos NoSQL (Firestore) organizada de forma relac
 
 
 ## PROMPT 
-Este es el **Prompt Maestro** diseñado para ser entregado a un modelo de IA avanzado (como Claude 3.5 Sonnet, GPT-4o o una instancia técnica de Gemini) para que actúe como el Arquitecto de Software Senior y Lead Developer de Antigravity.
+---
 
-El objetivo de este prompt es que la IA genere el código base, la estructura de archivos o la lógica de los algoritmos descritos en tu manual.
+Aquí tienes el **Prompt Final de Implementación**:
 
 ---
 
-# ☕ Prompt de Ingeniería: Sistema CoffeeManage Pro
+# ☕ Prompt de Ingeniería: CoffeeManage Pro (Clean Architecture + Provider + Firebase)
 
-**Rol:** Actúa como un Arquitecto de Software Senior y Desarrollador Full-Stack experto en Flutter y Firebase, trabajando bajo los estándares de diseño y ejecución de la firma "Antigravity".
+**Rol:** Actúa como Arquitecto de Software Senior y Lead Developer de **Antigravity**. Tu misión es codificar el núcleo de **CoffeeManage Pro**, un sistema multiplataforma (Android, iOS, Web, Windows) de alto rendimiento para gestión de café de especialidad.
 
-**Contexto del Proyecto:**
-Debes iniciar el desarrollo de **CoffeeManage Pro**, una solución multiplataforma (Android, iOS, Web, Windows) para la gestión de cafeterías de especialidad. El sistema debe regirse por una estética **Dark Coffee & Onyx Black Premium** y una arquitectura de software impecable.
+### 1. Gestión de Estado (Provider Pattern)
 
-**Tarea Inmediata:**
-Genera la estructura base del proyecto y el núcleo de la lógica de inventario siguiendo estas especificaciones:
+Implementa la capa de presentación utilizando **Provider** para la gestión de estado reactivo:
 
-### 1. Arquitectura de Archivos (Clean Architecture)
+* **InventoryProvider:** Debe manejar el estado de la colección `ingredientes`, permitiendo actualizaciones en tiempo real y disparando alertas cuando un insumo llegue a su `alerta_minima`.
+* **OrderProvider:** Debe gestionar el carrito de compras actual, el cálculo de impuestos/totales y el proceso de envío a Firebase.
+* **TableProvider:** Un `StreamProvider` que escuche los cambios en el mapa de mesas para actualizar la UI instantáneamente en todos los dispositivos.
 
-Implementa la estructura de directorios en `lib/` siguiendo el patrón de capas:
+### 2. Estructura de Datos (Firestore NoSQL)
 
-* `core/`: (constants, theme, utils).
-* `domain/`: (entities, usecases, repositories interfaces).
-* `data/`: (models, repositories implementations, datasources).
-* `presentation/`: (providers/bloc, screens, widgets).
+Genera modelos en Dart con `fromFirestore` y `toJson` para las siguientes colecciones:
 
-### 2. Diseño de Sistema (UI/UX - Antigravity Style)
+* **`usuarios`:** `{ uid: String, nombre: String, rol: admin|mesero|cocina, status: Bool }`
+* **`ingredientes`:** `{ id: String, nombre: String, stock_actual: Double, alerta_minima: Double }`
+* **`productos`:** `{ id: String, nombre: String, precio: Double, receta: Map<id_ingrediente, cantidad> }`
+* **`pedidos`:** `{ id: String, items: List, estado: pendiente|preparando|listo|pagado, total: Double, timestamp: Timestamp }`
 
-Crea una clase `AppTheme` en Flutter que defina un `ThemeData` de Material 3 con:
+### 3. Especificaciones Windows & iOS
 
-* **Colores:** Onyx Base (#121212), Coffee Elevation (#1E1E1E), Espresso Primary (#3E2723), Cinnamon Accent (#795548), Latte Cream (#D7CCC8).
-* **Componentes:** Tarjetas con bordes redondeados (16px), tipografía clara y contrastada, y botones táctiles optimizados (48x48 min).
+El código debe estar preparado para el despliegue nativo:
 
-### 3. Lógica de Negocio Crítica: "Algoritmo de Descuento Atómico"
+* **Windows (Desktop):** Optimiza la UI para pantallas grandes usando un `NavigationRail` lateral. Incluye soporte para impresión de tickets térmicos mediante protocolos de comunicación serial/USB.
+* **iOS (Mobile):** Implementa el sistema de diseño Dark Coffee respetando el `SafeArea`, gestos táctiles fluidos y soporte para notificaciones Push cuando un pedido cambie a estado "listo".
 
-Escribe una función en Dart/Flutter (Usecase) que realice lo siguiente:
+### 4. Lógica de Negocio: Algoritmo de Descuento Atómico
 
-* **Entrada:** Un `OrderEntity` que contiene una lista de productos.
-* **Proceso:** Por cada producto, debe consultar su receta (`Map<String, double>`), acceder a la colección de `ingredientes` en Firestore y restar el stock correspondiente.
-* **Validación de Seguridad:** Debe incluir una verificación de "Bloqueo Preventivo". Si el `stock_actual` de cualquier ingrediente es menor al requerimiento de la receta, la transacción debe cancelarse y arrojar una excepción de "Stock Insuficiente".
+Desarrolla un `Service` que utilice **Firebase Transactions**:
 
-### 4. Modelo de Datos (NoSQL Relacional)
+* Al procesar un pedido, debe leer la receta de cada producto y restar las cantidades exactas de la colección `ingredientes`.
+* **Validación Crítica:** Si el `stock_actual` es insuficiente para completar la receta, la transacción debe fallar automáticamente, notificando al usuario mediante el `OrderProvider`.
 
-Genera las clases de modelo (`models/`) con métodos `fromFirestore` y `toJson` para:
+### 5. Identidad Visual (Antigravity Style)
 
-* `IngredientModel`: (id, nombre, stockActual, alertaMinima).
-* `ProductModel`: (id, nombre, precio, receta).
-* `OrderModel`: (id, items, estado [Enum: pendiente, preparando, listo, pagado], total, timestamp).
+Configura el `ThemeData` global:
 
-### 5. Requerimiento Técnico de Sincronización
+* **Fondo:** Onyx Base (#121212) | **Tarjetas:** Coffee Elevation (#1E1E1E).
+* **CTAs:** Espresso Primary (#3E2723) | **Acentos:** Cinnamon (#795548).
+* **Texto:** Latte Cream (#D7CCC8).
 
-Configura un ejemplo de `StreamProvider` para el "Mapa de Mesas", asegurando que los cambios de estado (Libre/Ocupada) se reflejen en tiempo real en todos los dispositivos conectados mediante `snapshots()` de Firebase.
-
-**Output Esperado:**
-
-1. Código Dart estructurado y limpio.
-2. Comentarios técnicos explicando la integración entre Firebase y la UI.
-3. Un breve resumen de cómo se garantiza la persistencia offline en esta implementación.
+**Entregable esperado:** Estructura de carpetas (`core`, `domain`, `data`, `presentation`), implementación de los `ChangeNotifier` de Provider, modelos de datos y la configuración del tema visual.
 
 ---
+
+### ¿Por qué este prompt es definitivo?
+
+1. **Reactividad:** Al incluir **Provider**, la IA estructurará la app para que la cocina vea los pedidos sin necesidad de refrescar la pantalla.
+2. **Robustez:** El uso de **Transactions** evita que el inventario se desfase si hay múltiples ventas simultáneas.
+3. **Versatilidad:** Define comportamientos específicos para el entorno de escritorio (**Windows**) y el ecosistema **iOS**.
